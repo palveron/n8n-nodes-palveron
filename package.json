@@ -1,0 +1,43 @@
+{
+  "name": "n8n-nodes-vexis",
+  "version": "0.1.0",
+  "description": "n8n community node for VEXIS AI Governance — verify prompts, lookup traces, check agent status",
+  "keywords": ["n8n-community-node-package", "n8n", "vexis", "ai-governance", "guardrails", "audit-trail"],
+  "license": "Apache-2.0",
+  "homepage": "https://docs.vexis.io/integrations/n8n",
+  "author": {
+    "name": "VEXIS",
+    "email": "sdk@vexis.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/disruptivetrends/n8n-nodes-vexis.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes/ credentials/ --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/VexisApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Vexis/Vexis.node.js"
+    ]
+  },
+  "devDependencies": {
+    "n8n-workflow": "*",
+    "typescript": "^5.5.0",
+    "gulp": "^4.0.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
