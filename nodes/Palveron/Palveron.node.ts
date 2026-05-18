@@ -6,23 +6,23 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 
-export class Vexis implements INodeType {
+export class Palveron implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'VEXIS',
-		name: 'vexis',
-		icon: 'file:vexis.svg',
+		displayName: 'PALVERON',
+		name: 'palveron',
+		icon: 'file:palveron.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
 		description: 'AI Governance — verify prompts, lookup traces, check agent status',
 		defaults: {
-			name: 'VEXIS',
+			name: 'PALVERON',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'vexisApi',
+				name: 'palveronApi',
 				required: true,
 			},
 		],
@@ -61,7 +61,7 @@ export class Vexis implements INodeType {
 					{
 						name: 'Health Check',
 						value: 'healthCheck',
-						description: 'Check if the VEXIS gateway is healthy',
+						description: 'Check if the PALVERON gateway is healthy',
 						action: 'Check gateway health',
 					},
 				],
@@ -169,9 +169,9 @@ export class Vexis implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
-		const credentials = await this.getCredentials('vexisApi');
+		const credentials = await this.getCredentials('palveronApi');
 
-		const baseUrl = (credentials.baseUrl as string || 'https://gateway.vexis.io').replace(/\/+$/, '');
+		const baseUrl = (credentials.baseUrl as string || 'https://gateway.palveron.com').replace(/\/+$/, '');
 		const apiKey = credentials.apiKey as string;
 
 		for (let i = 0; i < items.length; i++) {

@@ -1,21 +1,36 @@
 {
-  "name": "n8n-nodes-vexis",
-  "version": "0.1.0",
-  "description": "n8n community node for VEXIS AI Governance — verify prompts, lookup traces, check agent status",
-  "keywords": ["n8n-community-node-package", "n8n", "vexis", "ai-governance", "guardrails", "audit-trail"],
-  "license": "Apache-2.0",
-  "homepage": "https://docs.vexis.io/integrations/n8n",
+  "name": "n8n-nodes-palveron",
+  "version": "1.0.0",
+  "description": "n8n community nodes for Palveron AI Governance — verify prompts, manage agents, and enforce compliance policies in your n8n workflows.",
+  "keywords": [
+    "n8n",
+    "n8n-community-node-package",
+    "palveron",
+    "ai-governance",
+    "guardrails",
+    "compliance",
+    "eu-ai-act",
+    "audit-trail",
+    "pii-detection",
+    "llm"
+  ],
+  "license": "MIT",
+  "homepage": "https://docs.palveron.com/integrations/n8n",
   "author": {
-    "name": "VEXIS",
-    "email": "sdk@vexis.io"
+    "name": "Palveron",
+    "email": "hello@palveron.com",
+    "url": "https://palveron.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/disruptivetrends/n8n-nodes-vexis.git"
+    "url": "https://github.com/palveron/n8n-nodes-palveron.git"
+  },
+  "bugs": {
+    "url": "https://github.com/palveron/n8n-nodes-palveron/issues"
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc && gulp build:icons",
+    "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint nodes/ credentials/ --ext .ts",
     "prepublishOnly": "npm run build"
@@ -26,16 +41,22 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/VexisApi.credentials.js"
+      "dist/credentials/PalveronApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Vexis/Vexis.node.js"
+      "dist/nodes/Palveron/Palveron.node.js"
     ]
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
+    "@types/node": "^20.0.0",
     "n8n-workflow": "*",
-    "typescript": "^5.5.0",
-    "gulp": "^4.0.2"
+    "typescript": "^5.5.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

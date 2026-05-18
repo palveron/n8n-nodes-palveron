@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Verify no vexis remnants
+        run: |
+          if grep -rIni "vexis\|disruptivetrends\|vx_live\|vx_test\|gp_live\|gp_test\|x-vexis-" nodes/ credentials/ README.md CHANGELOG.md package.json LICENSE 2>/dev/null; then
+            echo "ERROR: Found vexis remnants in source files."
+            exit 1
+          fi
+          echo "Clean — no vexis remnants found."

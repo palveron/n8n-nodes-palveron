@@ -1,50 +1,82 @@
-# n8n-nodes-vexis
+<p align="center">
+  <h1 align="center">n8n-nodes-palveron</h1>
+  <p align="center">Official n8n community nodes for the Palveron AI Governance Gateway</p>
+</p>
 
-AI Governance node for **n8n** — verify prompts, lookup traces, and check agent status via the VEXIS platform.
+<p align="center">
+  <a href="https://www.npmjs.com/package/n8n-nodes-palveron"><img src="https://img.shields.io/npm/v/n8n-nodes-palveron.svg?style=flat-square&color=cb3837" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/n8n-nodes-palveron"><img src="https://img.shields.io/npm/dm/n8n-nodes-palveron.svg?style=flat-square" alt="npm downloads"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License: MIT"></a>
+  <a href="https://docs.palveron.com/integrations/n8n"><img src="https://img.shields.io/badge/docs-palveron.com-5A67D8?style=flat-square" alt="Documentation"></a>
+</p>
 
-[![npm](https://img.shields.io/npm/v/n8n-nodes-vexis.svg?style=flat-square)](https://www.npmjs.com/package/n8n-nodes-vexis)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+---
+
+Verify prompts, list active policies, and pull governance audit trails into any n8n workflow. Drop the **Palveron** node anywhere a prompt is built, branch on `ALLOWED` / `BLOCKED` / `MODIFIED`, and ship compliance-ready automation in minutes.
+
+- **Community-node-package compliant** — installable from the n8n UI without code
+- **First-class credential type** — API key + on-prem base URL
+- **Per-call audit trail** — every operation returns the Palveron trace ID
 
 ## Installation
 
-In your n8n instance:
+### From the n8n UI
+
+Settings → Community Nodes → Install → `n8n-nodes-palveron`.
+
+### Self-hosted / manual
 
 ```bash
-npm install n8n-nodes-vexis
+cd ~/.n8n/nodes
+npm install n8n-nodes-palveron
 ```
 
-Or via n8n UI: Settings → Community Nodes → Install → `n8n-nodes-vexis`
+Then restart n8n.
 
-## Operations
+## Credentials
 
-| Operation | Description |
-|-----------|-------------|
-| **Verify** | Check a prompt against governance policies. Returns ALLOWED/BLOCKED/MODIFIED. |
-| **Trace Lookup** | Get full details of a specific governance trace by ID. |
-| **List Traces** | List recent traces with optional decision filter. |
-| **Agent Status** | Check the status of a registered AI agent. |
-| **Health Check** | Verify the VEXIS gateway is running. |
+Create a **Palveron API** credential:
 
-## Setup
+| Field | Value |
+|-------|-------|
+| API Key | Your `pv_live_…` or `pv_test_…` key |
+| Base URL | `https://gateway.palveron.com` (or your self-hosted gateway) |
 
-1. Get your API key from [VEXIS Dashboard](https://app.vexis.io) → Settings → API Keys
-2. In n8n: Settings → Credentials → New → **VEXIS API**
-3. Enter your API key and (optionally) your gateway URL for on-prem
+The credential is reused by every Palveron node in a workflow.
 
-## Example Workflow
+## Node operations
 
-**Governed AI Pipeline:**
-1. Webhook trigger receives user input
-2. **VEXIS Verify** node checks the input
-3. If ALLOWED → send to OpenAI/Claude for processing
-4. If BLOCKED → return error response with reason
+The **Palveron** node ships with three operations:
+
+| Operation | Purpose |
+|-----------|---------|
+| **Verify Prompt** | Run a prompt through the gateway. Output exposes `decision`, `output`, `reason`, `traceId`, `findings`, and `latencyMs`. Branch on `decision`. |
+| **List Policies** | Fetch the project's active guardrails (id, name, prompt preview, environment). Useful for compliance dashboards. |
+| **Check Health** | Gateway readiness probe. Fail-fast workflows can guard on this before they call any model. |
+
+## Example workflow
+
+```
+Webhook → Palveron (Verify Prompt) → IF decision == BLOCKED → Slack alert
+                                  └→ OpenAI (Chat Completion) → Response
+```
+
+The OpenAI node always reads `Palveron → output` instead of the raw prompt, so anything the gateway redacted (PII, secrets) never reaches the model.
+
+## Requirements
+
+- n8n **1.0 or newer**
+- Node.js **18 or newer**
+- A Palveron account (free tier works for evaluation)
 
 ## Links
 
-- [Documentation](https://docs.vexis.io/integrations/n8n)
-- [VEXIS Dashboard](https://app.vexis.io)
-- [GitHub](https://github.com/disruptivetrends/n8n-nodes-vexis)
+- **Documentation** — [docs.palveron.com/integrations/n8n](https://docs.palveron.com/integrations/n8n)
+- **Dashboard** — [palveron.com](https://palveron.com)
+- **Support** — [hello@palveron.com](mailto:hello@palveron.com)
+- **GitHub** — [palveron/n8n-nodes-palveron](https://github.com/palveron/n8n-nodes-palveron)
+- **Changelog** — [CHANGELOG.md](https://github.com/palveron/n8n-nodes-palveron/blob/main/CHANGELOG.md)
 
 ## License
 
-[Apache 2.0](./LICENSE)
+[MIT](./LICENSE) — Copyright © 2026 Palveron.
