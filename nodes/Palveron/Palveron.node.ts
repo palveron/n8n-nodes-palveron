@@ -3,6 +3,8 @@ import {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	JsonObject,
+	NodeApiError,
 	NodeOperationError,
 } from 'n8n-workflow';
 
@@ -190,7 +192,14 @@ export class Palveron implements INodeType {
 							// ignore invalid JSON — send empty metadata
 						}
 
-						response = await this.helpers.httpRequest({
+						// Client Response Contract (gateway docs/CLIENT_RESPONSE_CONTRACT.md):
+						// `body.decision` is the source of truth; the HTTP status only mirrors
+						// it. A BLOCKED verdict arrives as HTTP 403 WITH a full verify body — a
+						// governance result, NOT a transport error. So we must read the body on
+						// non-2xx and branch on `body.decision` instead of letting httpRequest
+						// throw on the status. Only a body without a `decision` field (real
+						// transport/auth/validation failure) is surfaced as a node error.
+						const verifyResponse = await this.helpers.httpRequest({
 							method: 'POST',
 							url: `${baseUrl}/api/v1/verify`,
 							headers: {
@@ -205,7 +214,27 @@ export class Palveron implements INodeType {
 								},
 							},
 							json: true,
+							returnFullResponse: true,
+							ignoreHttpStatusErrors: true,
 						});
+
+						const verifyBody = verifyResponse.body as { decision?: unknown; error?: unknown };
+
+						if (verifyBody && typeof verifyBody.decision === 'string') {
+							// Governance verdict (PASSED / MODIFIED / FLAGGED / PENDING_APPROVAL /
+							// BLOCKED) — pass the full body through as a clean result.
+							response = verifyBody as object;
+						} else {
+							// No decision in the body → genuine transport / auth / validation error.
+							const detail =
+								verifyBody && typeof verifyBody.error === 'string'
+									? verifyBody.error
+									: `HTTP ${verifyResponse.statusCode}`;
+							throw new NodeApiError(this.getNode(), verifyBody as JsonObject, {
+								message: `Palveron verify failed: ${detail}`,
+								httpCode: String(verifyResponse.statusCode),
+							});
+						}
 						break;
 					}
 
