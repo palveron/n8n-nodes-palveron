@@ -17,7 +17,7 @@ export class PalveronApi implements ICredentialType {
 			},
 			default: '',
 			required: true,
-			description: 'Your PALVERON project API key (starts with pv_live_ or pv_test_)',
+			description: 'Your PALVERON project API key (starts with pv_live_)',
 		},
 		{
 			displayName: 'Base URL',

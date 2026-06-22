@@ -39,7 +39,7 @@ Create a **Palveron API** credential:
 
 | Field | Value |
 |-------|-------|
-| API Key | Your `pv_live_…` or `pv_test_…` key |
+| API Key | Your `pv_live_…` key |
 | Base URL | `https://gateway.palveron.com` (or your self-hosted gateway) |
 
 The credential is reused by every Palveron node in a workflow.
